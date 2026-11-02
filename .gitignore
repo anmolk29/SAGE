@@ -1,0 +1,54 @@
+# SAGE root ignore rules (safe baseline). Data, environments, and generated
+# artifacts stay on disk but out of Git. 04_Implementation/.gitignore also applies.
+
+# --- Dataset archives (named explicitly) and partial downloads ---
+/IPAD_dataset.zip
+/image-data.zip
+*.crdownload
+*.part
+*.partial
+*.download
+
+# --- Raw / extracted dataset material ---
+IPAD_dataset/
+/data/
+/04_Implementation/data/
+
+# --- Python virtual environments ---
+.venv/
+venv/
+
+# --- Generated outputs and results (incl. synthetic demo output) ---
+/results/
+/outputs/
+/04_Implementation/results/
+/04_Implementation/outputs/
+
+# --- Model weights and checkpoints ---
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+*.weights
+*.tflite
+*.h5
+yolo-v8-weights/
+checkpoints/
+
+# --- Python and tool caches ---
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+*.egg-info/
+
+# --- Machine-local / secrets ---
+.env
+.streamlit/secrets.toml
+~$*
+Thumbs.db
+desktop.ini
+.DS_Store
