@@ -1,0 +1,42 @@
+{
+  "model": "ONNX Model Zoo ResNet-18 v1-7, ImageNet 1000-class logits as frozen features",
+  "model_path": "models\\pretrained\\resnet18-v1-7.onnx",
+  "model_sha256": "4e8f8653e7a2222b3904cc3fe8e304cd8b339ce1d05fd24688162f86fb6df52c",
+  "label_source": "weak/manual folder membership recorded as source-frame ranges in each pilot_provenance.json",
+  "validation_design": "leave-one-source-video-out across three selected clips",
+  "heads": {
+    "wood2": {
+      "path": "models\\linear-probes\\resnet18_probe_heldout_wood2.json",
+      "training_clips": [
+        "wood3",
+        "things"
+      ],
+      "training_frames": 336,
+      "training_normal": 185,
+      "training_anomaly": 151,
+      "held_out_frames": 205
+    },
+    "wood3": {
+      "path": "models\\linear-probes\\resnet18_probe_heldout_wood3.json",
+      "training_clips": [
+        "wood2",
+        "things"
+      ],
+      "training_frames": 374,
+      "training_normal": 209,
+      "training_anomaly": 165,
+      "held_out_frames": 167
+    },
+    "things": {
+      "path": "models\\linear-probes\\resnet18_probe_heldout_things.json",
+      "training_clips": [
+        "wood2",
+        "wood3"
+      ],
+      "training_frames": 372,
+      "training_normal": 198,
+      "training_anomaly": 174,
+      "held_out_frames": 169
+    }
+  }
+}

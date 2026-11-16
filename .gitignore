@@ -1,0 +1,19 @@
+.venv/
+.codex-build/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+build/
+dist/
+*.egg-info/
+data/**
+!data/.gitkeep
+results/**
+!results/.gitkeep
+outputs/**
+!outputs/.gitkeep
+presentation-output/archive/**
+
+# Local ChatGPT project context and synced reference cache
+AGENTS.md
+sources/**

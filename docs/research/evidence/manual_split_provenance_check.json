@@ -1,0 +1,200 @@
+{
+  "dataset_doi": "10.17632/s25x2bnshz.1",
+  "checked_at_local_date": "2026-11-16",
+  "method": "Selected archive members fetched by HTTP range; each member checked against ZIP size and CRC. Hashes here are for the 12 exact source/manual-split files.",
+  "checks": [
+    {
+      "source_video_stem": "boardcamera_iron_ore_7_wood_2",
+      "sample_counter": 2250,
+      "folder_label": "normal",
+      "source_image": {
+        "archive_path": "image-files/boardcamera_iron_ore_7_wood_2/2250-boardcamera_iron_ore_7_wood_2.jpeg",
+        "local_path": "data/raw/mendeley-conveyor/boardcamera_iron_ore_7_wood_2/image-files/boardcamera_iron_ore_7_wood_2/2250-boardcamera_iron_ore_7_wood_2.jpeg",
+        "zip_crc32": "c7f69391",
+        "verified_local_crc32": "c7f69391",
+        "sha256": "6f3c6f08171ede93dc6bee2106c955832ffe7820959e3b4659a37f9e45fb7288",
+        "bytes": 62103,
+        "dimensions_px": [
+          1280,
+          720
+        ]
+      },
+      "manual_split_image": {
+        "archive_path": "image-files-manual-split/normal/2250-boardcamera_iron_ore_7_wood_2.jpeg",
+        "local_path": "data/raw/mendeley-conveyor/boardcamera_iron_ore_7_wood_2/image-files/boardcamera_iron_ore_7_wood_2/2250-boardcamera_iron_ore_7_wood_2.jpeg",
+        "zip_crc32": "c7f69391",
+        "verified_local_crc32": "c7f69391",
+        "sha256": "6f3c6f08171ede93dc6bee2106c955832ffe7820959e3b4659a37f9e45fb7288",
+        "bytes": 62103,
+        "dimensions_px": [
+          1280,
+          720
+        ],
+        "retained_separately": false
+      },
+      "byte_identical": true,
+      "interpretation": "normal sample exact byte match"
+    },
+    {
+      "source_video_stem": "boardcamera_iron_ore_7_wood_2",
+      "sample_counter": 2362,
+      "folder_label": "anomaly",
+      "source_image": {
+        "archive_path": "image-files/boardcamera_iron_ore_7_wood_2/2362-boardcamera_iron_ore_7_wood_2.jpeg",
+        "local_path": "data/raw/mendeley-conveyor/boardcamera_iron_ore_7_wood_2/image-files/boardcamera_iron_ore_7_wood_2/2362-boardcamera_iron_ore_7_wood_2.jpeg",
+        "zip_crc32": "359827ac",
+        "verified_local_crc32": "359827ac",
+        "sha256": "5aae449d7fb88c3dae88e2a8df8cdb5f5bcb5e98b8f71371faeb08cdedee07a6",
+        "bytes": 67365,
+        "dimensions_px": [
+          1280,
+          720
+        ]
+      },
+      "manual_split_image": {
+        "archive_path": "image-files-manual-split/annomaly/2362-boardcamera_iron_ore_7_wood_2_detected_1.jpg",
+        "local_path": "data/provenance/mendeley-conveyor/manual-split-check/2362-boardcamera_iron_ore_7_wood_2_detected_1.jpg",
+        "zip_crc32": "211c968f",
+        "verified_local_crc32": "211c968f",
+        "sha256": "fea976b38d3fdb2ced78e9602e46529deeda6eac6eb6a80e0422de3b36e4f7e3",
+        "bytes": 135902,
+        "dimensions_px": [
+          1280,
+          602
+        ],
+        "retained_separately": true
+      },
+      "byte_identical": false,
+      "interpretation": "anomaly rendering differs; same video stem/counter, visually consistent with source image and prior decoded-frame mapping"
+    },
+    {
+      "source_video_stem": "boardcamera_iron_ore_7_wood_3",
+      "sample_counter": 2300,
+      "folder_label": "normal",
+      "source_image": {
+        "archive_path": "image-files/boardcamera_iron_ore_7_wood_3/2300-boardcamera_iron_ore_7_wood_3.jpeg",
+        "local_path": "data/raw/mendeley-conveyor/boardcamera_iron_ore_7_wood_3/image-files/boardcamera_iron_ore_7_wood_3/2300-boardcamera_iron_ore_7_wood_3.jpeg",
+        "zip_crc32": "f2191df8",
+        "verified_local_crc32": "f2191df8",
+        "sha256": "2ff11450930ab9c18f90bef2358cc16795e6f86eca7329d6b88dd5b18c7bef3e",
+        "bytes": 54863,
+        "dimensions_px": [
+          1280,
+          720
+        ]
+      },
+      "manual_split_image": {
+        "archive_path": "image-files-manual-split/normal/2300-boardcamera_iron_ore_7_wood_3.jpeg",
+        "local_path": "data/raw/mendeley-conveyor/boardcamera_iron_ore_7_wood_3/image-files/boardcamera_iron_ore_7_wood_3/2300-boardcamera_iron_ore_7_wood_3.jpeg",
+        "zip_crc32": "f2191df8",
+        "verified_local_crc32": "f2191df8",
+        "sha256": "2ff11450930ab9c18f90bef2358cc16795e6f86eca7329d6b88dd5b18c7bef3e",
+        "bytes": 54863,
+        "dimensions_px": [
+          1280,
+          720
+        ],
+        "retained_separately": false
+      },
+      "byte_identical": true,
+      "interpretation": "normal sample exact byte match"
+    },
+    {
+      "source_video_stem": "boardcamera_iron_ore_7_wood_3",
+      "sample_counter": 2388,
+      "folder_label": "anomaly",
+      "source_image": {
+        "archive_path": "image-files/boardcamera_iron_ore_7_wood_3/2388-boardcamera_iron_ore_7_wood_3.jpeg",
+        "local_path": "data/raw/mendeley-conveyor/boardcamera_iron_ore_7_wood_3/image-files/boardcamera_iron_ore_7_wood_3/2388-boardcamera_iron_ore_7_wood_3.jpeg",
+        "zip_crc32": "e469b61c",
+        "verified_local_crc32": "e469b61c",
+        "sha256": "566e68d108df64013dc7ff6336586522d4ff0f37f2fd1e6965bb53e463062937",
+        "bytes": 54209,
+        "dimensions_px": [
+          1280,
+          720
+        ]
+      },
+      "manual_split_image": {
+        "archive_path": "image-files-manual-split/annomaly/2388-boardcamera_iron_ore_7_wood_3_detected_1.jpg",
+        "local_path": "data/provenance/mendeley-conveyor/manual-split-check/2388-boardcamera_iron_ore_7_wood_3_detected_1.jpg",
+        "zip_crc32": "eb1017ac",
+        "verified_local_crc32": "eb1017ac",
+        "sha256": "024a1fe598f824e05fa3f44c4cbccb3e129fdd757f5895dfb33a073c7b6e1c8f",
+        "bytes": 109279,
+        "dimensions_px": [
+          1280,
+          621
+        ],
+        "retained_separately": true
+      },
+      "byte_identical": false,
+      "interpretation": "anomaly rendering differs; same video stem/counter, visually consistent with source image and prior decoded-frame mapping"
+    },
+    {
+      "source_video_stem": "boardcamera_iron_ore_things",
+      "sample_counter": 2840,
+      "folder_label": "normal",
+      "source_image": {
+        "archive_path": "image-files/boardcamera_iron_ore_things/2840-boardcamera_iron_ore_things.jpeg",
+        "local_path": "data/raw/mendeley-conveyor/boardcamera_iron_ore_things/image-files/boardcamera_iron_ore_things/2840-boardcamera_iron_ore_things.jpeg",
+        "zip_crc32": "65424cd1",
+        "verified_local_crc32": "65424cd1",
+        "sha256": "17a78f1b2cdbb5b5bcb3f76a4651bb353a34c395589cb9d298bcdddbd4349065",
+        "bytes": 57244,
+        "dimensions_px": [
+          1280,
+          720
+        ]
+      },
+      "manual_split_image": {
+        "archive_path": "image-files-manual-split/normal/2840-boardcamera_iron_ore_things.jpeg",
+        "local_path": "data/raw/mendeley-conveyor/boardcamera_iron_ore_things/image-files/boardcamera_iron_ore_things/2840-boardcamera_iron_ore_things.jpeg",
+        "zip_crc32": "65424cd1",
+        "verified_local_crc32": "65424cd1",
+        "sha256": "17a78f1b2cdbb5b5bcb3f76a4651bb353a34c395589cb9d298bcdddbd4349065",
+        "bytes": 57244,
+        "dimensions_px": [
+          1280,
+          720
+        ],
+        "retained_separately": false
+      },
+      "byte_identical": true,
+      "interpretation": "normal sample exact byte match"
+    },
+    {
+      "source_video_stem": "boardcamera_iron_ore_things",
+      "sample_counter": 2888,
+      "folder_label": "anomaly",
+      "source_image": {
+        "archive_path": "image-files/boardcamera_iron_ore_things/2888-boardcamera_iron_ore_things.jpeg",
+        "local_path": "data/raw/mendeley-conveyor/boardcamera_iron_ore_things/image-files/boardcamera_iron_ore_things/2888-boardcamera_iron_ore_things.jpeg",
+        "zip_crc32": "12292a9d",
+        "verified_local_crc32": "12292a9d",
+        "sha256": "b86fc797d4713bc711dcf8a83bd5ced21de6a79f2b986d5345268227ce4c4f3f",
+        "bytes": 60857,
+        "dimensions_px": [
+          1280,
+          720
+        ]
+      },
+      "manual_split_image": {
+        "archive_path": "image-files-manual-split/annomaly/2888-boardcamera_iron_ore_things_detected_1.jpg",
+        "local_path": "data/provenance/mendeley-conveyor/manual-split-check/2888-boardcamera_iron_ore_things_detected_1.jpg",
+        "zip_crc32": "dae8ce30",
+        "verified_local_crc32": "dae8ce30",
+        "sha256": "77bc219f12479a3e99ead3958b4867cef0d080560ea88d074c7ed7914a98d09a",
+        "bytes": 115152,
+        "dimensions_px": [
+          1280,
+          588
+        ],
+        "retained_separately": true
+      },
+      "byte_identical": false,
+      "interpretation": "anomaly rendering differs; same video stem/counter, visually consistent with source image and prior decoded-frame mapping"
+    }
+  ],
+  "scope_limit": "Six representative image pairs only; this does not validate every frame label, annotation adjudication, or inter-rater reliability."
+}

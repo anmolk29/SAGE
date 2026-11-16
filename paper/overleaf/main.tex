@@ -1,0 +1,172 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{url}
+
+\newcommand{\SAGEaffiliation}{\textit{Department and institution to be supplied}\\City, Country}
+
+\begin{document}
+
+\title{A Reproducible Study of Sensor-Guided Adaptive Video Sampling for Industrial Monitoring}
+
+\author{
+\IEEEauthorblockN{Anmol Kapila}
+\IEEEauthorblockA{\SAGEaffiliation\\Student ID: 2428020219}
+\and
+\IEEEauthorblockN{Ravi Bansal}
+\IEEEauthorblockA{\SAGEaffiliation\\Student ID: 2428020189}
+\and
+\IEEEauthorblockN{Rajarshi Aggarwal}
+\IEEEauthorblockA{\SAGEaffiliation\\Student ID: 2428020188}
+}
+
+\maketitle
+
+\begin{abstract}
+Industrial video analytics can consume substantial compute when every frame is analyzed, while resource-constrained monitoring systems must balance event coverage, response time, and processing cost. SAGE compares fixed-rate, video-activity-adaptive, sensor-triggered, and budget-aware scheduling at matched analysis quotas. This study reports three weakly labeled transitions from a public, laboratory-scale iron-ore conveyor dataset. A frozen ImageNet-pretrained ResNet-18 feature extractor and class-balanced logistic head, trained on two clips and evaluated on the held-out third, matched MOG2 event recall at each tested budget. At a 25\% budget, the ResNet probe yielded fewer false-positive frames (25/38/22/38 versus 73/128/59/128 for fixed/video/sensor/budget-aware policies) but required more measured host processing time (2.891 versus 0.736 seconds summed for fixed-rate). These three-event results are exploratory and do not establish general anomaly-detection accuracy, sensor benefit, edge savings, or energy savings.
+\end{abstract}
+
+\begin{IEEEkeywords}
+edge video analytics, industrial monitoring, adaptive sampling, event-triggered processing, sensor simulation, resource-aware scheduling
+\end{IEEEkeywords}
+
+\section{Introduction}
+Video monitoring can be computationally wasteful when a detector processes every frame during long quiet periods. Edge-video analytics research has studied query optimization, resource allocation, placement, and adaptive processing; adaptive sampling alone is therefore not claimed as novel here \cite{xu2023edge,zhang2022adaptive,qian2023osmotic,lin2024learning,wang2024dependence,li2020reducto,hung2018videoedge,xiao2021performance}. This work addresses a narrower empirical question: under a fixed event definition and analysis budget, do imperfect sensor cues improve frame scheduling beyond fixed-rate and video-only adaptation?
+
+SAGE combines public laboratory-scale conveyor video, a classical computer-vision activity detector, an exploratory pretrained ResNet-18 linear probe, configurable simulated sensor cues, four scheduling policies, and a reproducible evaluation interface. The software tests trade-offs; it does not validate physical sensors or edge-device energy performance.
+
+The bounded contributions are: (1) an implementable protocol for paired comparison of four frame-scheduling policies; (2) a cue simulator that exposes misses, false triggers, delay, and reproducible random seeds; (3) a run-record format and dashboard for inspecting per-clip and aggregate results; and (4) a clip-held-out exploratory ResNet-18 comparison and an openly qualified three-clip policy characterization, including misses by video-adaptive policies and limits that prevent broader claims.
+
+\section{Research Questions}
+The study asks: RQ1) at matched analysis budgets, how do fixed-rate, video-only adaptive, sensor-triggered, and budget-aware adaptive policies compare on event recall, false alarms, latency, and processing cost? RQ2) how do simulated cue misses, false triggers, and delays change sensor-guided scheduling? RQ3) under which tested conditions does video-only adaptation match or outperform sensor-guided scheduling?
+
+The protocol does not presume a positive outcome. A finding that cues add no benefit, or that cue errors erase their benefit, remains informative when deciding whether physical sensor integration is justified. In the current implementation, event annotations seed the cue simulator; this is an oracle-derived controlled condition, not independent sensor evidence.
+
+\section{Related Work}
+Edge-video analytics systems cover architecture, filtering, sampling configuration, query scheduling, bandwidth allocation, and edge/cloud placement \cite{xu2023edge,zhang2022adaptive,qian2023osmotic,lin2024learning,wang2024dependence,li2020reducto,hung2018videoedge,xiao2021performance}. Reducto's on-camera filtering and adaptive rate/configuration selection establish substantial prior art; frame filtering itself is not a SAGE novelty claim \cite{li2020reducto,zhang2022adaptive}. MACEdge combines heterogeneous sensor access with adaptive video configuration, while earlier sensor-network work considered semantic event-driven data collection \cite{zhong2023macedge,vaisenberg2009exploiting}. Industrial IoT reviews provide sensor context but do not by themselves establish sensor-video integration \cite{industrialmachinery2023mapping}. These precedents make a broad claim that sensor cues plus adaptive video analytics are unprecedented indefensible.
+
+Video anomaly research provides evaluation and benchmark context \cite{ramachandra2022survey,acsintoae2022ubnormal,ramachandra2020streetscene}. Industrial visual-anomaly benchmarks such as MVTec AD, MVTec LOCO AD, and Real-IAD are image-based; they support industrial-inspection context but cannot validate temporal sampling or detection latency \cite{bergmann2019mvtec,bergmann2022logical,wang2024realiad}. IPAD is directly relevant to industrial video, and recent work continues to evaluate industrial video-anomaly methods on it \cite{liu2025ipad,yu2025infp}. A rights-listed CC BY 4.0 conveyor dataset offers a narrower laboratory-scale foreign-object setting, but only partial labels \cite{desousa2025conveyor}.
+
+The bounded question is whether four policies produce different recall, latency, and workload trade-offs at identical frame quotas, and how controlled cue misses, false triggers, and delay affect those outcomes. This pilot exercises that comparison on three selected weakly labeled clips; it does not establish a new sampling algorithm or a general anomaly detector. The cited sources are a focused literature map, not a systematic review.
+
+\section{System and Experimental Method}
+\subsection{Data and event labels}
+The broad-topic candidate IPAD was not used because dataset-specific reuse rights, timing, and annotation reliability remain unverified. Instead, the pilot uses the CC BY 4.0 Mendeley dataset \emph{Image Dataset for Foreign Object Detection in Iron Ore Conveyor Belt Systems} (dataset DOI 10.17632/s25x2bnshz.1) \cite{desousa2025conveyor}. Three clips were evaluated: \texttt{boardcamera\_iron\_ore\_7\_wood\_2}, \texttt{boardcamera\_iron\_ore\_7\_wood\_3}, and \texttt{boardcamera\_iron\_ore\_things}. The source videos contain 4,313, 3,907, and 4,982 decodable frames at 119.1829, 117.8108, and 119.3415 frames/s, respectively, all at 1280$\times$720 resolution.
+
+Five or six numbered extracted images per clip were matched to same-index decoded source frames. A further spot check found byte-identical normal manual-split/source JPEGs for all three clips; three anomaly \texttt{\_detected\_1} files retained the matching source-video stem and counter and visually corresponded to the same-index source frames. Derived sequences contain 205, 167, and 169 JPEGs; unlabeled frames were omitted rather than interpolated. Labels come from manual-split folder membership and are weak frame annotations without documented inter-annotator reliability. Each selected anomaly run is represented as one event interval only for this bounded pilot. Data hashes, extraction receipts, file mappings, and interval transformations are recorded in the project provenance files.
+
+Each clip is represented by an identifier and event intervals containing start, end, event type, and region of interest. The evaluator reads the labels, and the cue simulator reads event starts to create simulated cues; the detector does not read labels, and schedulers receive only the generated cue stream. This indirect label-to-cue path makes sensor-guided conditions oracle-derived and can overstate realistic cue value. These results are controlled simulations. Independent sensor observations or an independently measured observable proxy are required before claiming multimodal evidence. Calibration and evaluation should be split by clip or device/process rather than by adjacent frames.
+
+\subsection{Perception methods}
+The classical computer-vision activity baseline uses OpenCV MOG2 background subtraction on 320$\times$240 grayscale scout frames, with history 120, variance threshold 32, shadows disabled, learning rate 0.1 during the first four frames and 0.01 thereafter. Foreground-pixel fraction is the activity score; the configurable default threshold is 0.015. This detects visual change, not semantic abnormality or causality. The present baseline has no region-specific scoring or calibration/held-out threshold workflow; those settings must be frozen and reported for a dataset evaluation.
+
+The OpenCV histogram-of-oriented-gradients (HOG) descriptor uses pretrained linear-SVM pedestrian weights. Frames are resized to 640 pixels wide and evaluated with 8$\times$8 stride/padding and scale 1.05. HOG detects pedestrians, so its conveyor run is a semantic-mismatch diagnostic, not an anomaly comparison.
+
+For the binary anomaly comparison, ONNX Model Zoo ResNet-18 v1-7 ImageNet weights (Apache-2.0 model card) produce 1,000 frozen logits from each 224$\times$224 center-cropped, normalized RGB frame. A class-balanced logistic linear head is fitted on weak/manual folder labels from two clips; the third whole source video is held out. The three folds yield 336, 374, and 372 training frames. The probability threshold is fixed at 0.5 and is not tuned on held-out clips. This is frozen-feature transfer learning, not full-network fine-tuning. The model aligns with the dataset's binary normal/anomaly labels, but is limited by three selected videos, weak labels, one event per clip, and no independent annotation adjudication.
+
+\subsection{Simulated sensor cues}
+The simulator samples each annotated event start with a configured detection probability, adds false triggers using a seeded per-second Bernoulli process, and applies a configured delay. Each policy in a paired comparison receives the same cue realization. Because event labels seed cues, sensor-guided results are oracle-derived simulations, not independent sensor evidence. The cues test sensitivity to controlled error; they do not estimate physical sensor accuracy, placement, or communication behavior.
+
+\subsection{Scheduling policies}
+Four schedulers are compared: (1) \emph{fixed-rate}, which uniformly spreads a target quota across a clip, independent of visual activity and cues; (2) \emph{video-activity-adaptive}, which prioritizes frames whose current lightweight motion-scout score exceeds a threshold, with deterministic fallback cadence to fill the shared quota; (3) \emph{sensor-triggered}, which prioritizes frames in an already-active simulated-cue window and uses the same kind of fallback; and (4) \emph{budget-aware adaptive}, which prioritizes a frame when current visual activity or an already-arrived cue is present, with deterministic fallback under the same quota.
+
+All policies share decoding, preprocessing, detector parameters, and evaluation clips. Each analyzes the exact common quota $\lceil Np\rceil$, where $N$ is the number of frames in the derived sequence and $p$ is the budget fraction. The video-activity and budget-aware policies also scan each frame with the lightweight scout, and its measured time is charged to those policies. The recorded detector runtime excludes media decoding, scheduler overhead, and output writing. Policy-specific parameters and per-frame decision traces are retained. The current command-line interface uses full-frame motion scores and does not configure per-clip regions of interest.
+
+\subsection{Metrics and comparison design}
+Event recall is detected annotated events divided by all annotated events, with matching rule and counts stated. The current false-alarm count treats each detector-positive analyzed frame outside annotated intervals as one false-positive frame; consecutive frames are not merged into alarm episodes. Latency is first valid detection time minus event start; misses are reported separately, and latency is in frames where original timestamps are unavailable. Processing cost includes analyzed-frame count/fraction and measured software runtime on the named host. Modeled budget limits are reported separately. Trade-off plots compare recall and latency against analyzed frames and measured runtime.
+
+The planned matrix varies policy, frame budget (0.10, 0.25, 0.50), cue detection probability (1.0, 0.9, 0.5), false triggers (0 and 2/min), cue delay (0 and 1 s, only where timing is validated), clip condition, and detector. Primary comparisons are paired by clip, budget, cue realization, and repetition seed. Per-clip outcomes should be shown with aggregate median and spread; clip-level paired bootstrap intervals are appropriate only if supported by the sample design. No condition or metric should be omitted solely because it is unfavorable.
+
+\section{Implementation and Reproducibility}
+The implementation comprises the experiment engine, command-line interface, Streamlit dashboard, and automated tests. The command-line interface writes CSV/JSONL policy metrics, per-event outcomes, and per-frame traces; the dashboard inspects saved runs. The pilot used Python 3.12.10, OpenCV 4.14.0, NumPy 2.5.4, and Windows 10; a more detailed processor model was unavailable from the host inventory. Each budget/policy run processed the same derived sequence and seed 17. Detector runtime includes the scout pass for video-adaptive and budget-aware policies, but excludes media loading/decoding, scheduler overhead, and output writing. Host runtime is not edge latency or energy.
+
+\section{Results}
+\subsection{Dataset and run coverage}
+The public-data evaluation contains three clips and one weakly labeled anomaly run per clip. All four policies ran at 10\%, 25\%, and 50\% of each clip, with total quotas of 55, 137, and 272 selected frames across the three clips. The same seed (17) was used throughout. A five-condition cue ablation ran at 25\% for each clip. Results are descriptive only; there are no repeat seeds or independently adjudicated labels for inferential analysis.
+
+\subsection{Primary policy comparison}
+Table~\ref{tab:mog2} reports the MOG2 results aggregated across the three selected clips. The asterisk marks annotation-derived simulated cues.
+
+\begin{table*}[t]
+\caption{MOG2 pilot results summed across three selected clips}
+\label{tab:mog2}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llrrrrr}
+\hline
+Budget & Policy & Recall & False-positive frames & Latency (s) & Frames & Runtime (s) \\
+\hline
+0.10 & Fixed-rate & 3/3 & 28 & varies by clip & 55 & 0.278 \\
+0.10 & Video-adaptive & 0/3 & 46 & missed & 55 & 3.070 \\
+0.10 & Sensor-triggered$^{*}$ & 3/3 & 24 & 0.000--0.0084 & 55 & 0.263 \\
+0.10 & Budget-aware$^{*}$ & 0/3 & 46 & missed & 55 & 3.076 \\
+0.25 & Fixed-rate & 3/3 & 73 & 0.000--0.0252 & 137 & 0.736 \\
+0.25 & Video-adaptive & 0/3 & 128 & missed & 137 & 3.507 \\
+0.25 & Sensor-triggered$^{*}$ & 3/3 & 59 & 0.000--0.0084 & 137 & 0.693 \\
+0.25 & Budget-aware$^{*}$ & 0/3 & 128 & missed & 137 & 3.499 \\
+0.50 & Fixed-rate & 3/3 & 144 & $\sim$0.000--0.0084 & 272 & 1.430 \\
+0.50 & Video-adaptive & 1/3 & 221 & missed for 2 clips & 272 & 4.153 \\
+0.50 & Sensor-triggered$^{*}$ & 3/3 & 116 & 0.000--0.0084 & 272 & 1.427 \\
+0.50 & Budget-aware$^{*}$ & 1/3 & 221 & missed for 2 clips & 272 & 4.154 \\
+\hline
+\multicolumn{7}{l}{$^{*}$ Cue stream is generated from the same event annotations used for evaluation.}
+\end{tabular}
+\end{table*}
+
+Across these selected clips and parameters, video-adaptive policies missed all three events at 10\% and 25\%, and detected one at 50\%. Fixed-rate detected all three at every budget. The sensor-triggered policy also detected all three, but its cues are annotation-derived and fallback sampling can detect events without cues. Near-zero cue-assisted latency follows from event-start-driven simulation and must not be interpreted as observed sensor latency. False-positive frames and runtimes sum across three clips; runtime excludes decoding, scheduler overhead, and writing. The sample is too small and lacks repeated seeds to support a stable policy ranking.
+
+\subsection{Cue-quality ablation}
+At the 25\% budget, five cue conditions were run for four policies on each of three clips (60 policy-condition rows). Conditions varied detection probability, false triggers, delay, and absence of cues. This controlled simulation is not an estimate of real sensor performance: event starts seed cue generation, and fallback sampling may detect events without cues. Per-clip ablation CSVs, event rows, and traces are preserved with the project results.
+
+\subsection{Classical computer vision and pretrained-model comparison}
+The classical MOG2 activity detector was evaluated against three weakly labeled conveyor runs. OpenCV's pretrained HOG pedestrian detector ran at a 25\% budget on the first clip and returned zero positive frames. HOG detects pedestrian presence, while this dataset labels foreign-object anomalies. Its zero recall and false-positive count are a semantic-mismatch diagnostic, not a comparative anomaly-detection result. The dataset's separate YOLOv8 weights detect the belt-center region, and the \texttt{conveyor} box labels do not mark foreign objects; those weights were not used as anomaly detections.
+
+For the clip-held-out ResNet probe, each selected clip was evaluated using a logistic head trained on the other two source videos. All policies used the same exact per-clip quotas as the MOG2 runs; aggregate quotas were 55, 137, and 272 frames at 10\%, 25\%, and 50\%. The fixed probability threshold was 0.5 before held-out evaluation. Table~\ref{tab:resnet} reports the aggregate results.
+
+\begin{table*}[t]
+\caption{Clip-held-out ResNet-18 probe results summed across three selected clips}
+\label{tab:resnet}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{llrrrr}
+\hline
+Budget & Policy & Recall & False-positive frames & Frames & Runtime (s) \\
+\hline
+0.10 & Fixed-rate & 3/3 & 13 & 55 & 1.220 \\
+0.10 & Video-adaptive & 0/3 & 13 & 55 & 3.735 \\
+0.10 & Sensor-triggered$^{*}$ & 3/3 & 7 & 55 & 1.198 \\
+0.10 & Budget-aware$^{*}$ & 0/3 & 13 & 55 & 3.755 \\
+0.25 & Fixed-rate & 3/3 & 25 & 137 & 2.891 \\
+0.25 & Video-adaptive & 0/3 & 38 & 137 & 5.393 \\
+0.25 & Sensor-triggered$^{*}$ & 3/3 & 22 & 137 & 2.822 \\
+0.25 & Budget-aware$^{*}$ & 0/3 & 38 & 137 & 5.347 \\
+0.50 & Fixed-rate & 3/3 & 51 & 272 & 5.681 \\
+0.50 & Video-adaptive & 1/3 & 75 & 272 & 8.129 \\
+0.50 & Sensor-triggered$^{*}$ & 3/3 & 45 & 272 & 5.529 \\
+0.50 & Budget-aware$^{*}$ & 1/3 & 75 & 272 & 7.937 \\
+\hline
+\multicolumn{6}{l}{$^{*}$ Cue stream is generated from the same event annotations used for evaluation.}
+\end{tabular}
+\end{table*}
+
+At 25\%, event recall matches the MOG2 table, while the ResNet probe generates fewer false-positive frames and takes more measured detector time. These are descriptive results from one seed, three held-out clips, and weak/manual interval labels. Sensor-triggered rows remain oracle-derived. ONNX session initialization, decoding, scheduler overhead, and output writing are excluded from processing time.
+
+\section{Discussion}
+The pilot shows that an activity threshold can prioritize normal conveyor motion and miss labeled anomaly runs at a fixed quota. Uniform sampling detected all three selected events at each tested budget with both MOG2 and the clip-held-out ResNet probe. At 25\%, the ResNet probe produced fewer false-positive frames at a higher host runtime. This small pattern suggests a compute/false-positive trade-off to test, not a general model or policy ranking. Cue-assisted runs cannot establish sensor value because the simulator receives annotation-derived event starts; fixed-rate and no-cue fallback can also detect events. Follow-up work should add independently adjudicated events, more source-video groups, repeated seeds, independent cue observations, and calibration/uncertainty analysis.
+
+\section{Limitations, Ethics, and Future Work}
+Simulation does not validate physical sensor detection, false-trigger rates, timing, placement, communication, or integration. The simulator derives cues from event starts and therefore gives sensor policies oracle-derived information. Host runtime is not an edge-device or energy measurement. Motion detectors are sensitive to camera movement, lighting, shadows, and occlusion; pretrained HOG detects pedestrians only and is not comparable to general machine-anomaly labels. Current false alarms are frame counts, not alarm episodes, and precision/F1 are not presently reported. Dataset temporal representation and annotation quality constrain latency and event claims. A small selected clip set supports conclusions only for the tested conditions. The literature map is not a systematic review.
+
+The dataset record displays CC BY 4.0; attribution must be retained and third-party content should be reviewed. Dataset-wide label quality has not been independently verified. The derived pilot has three selected weakly labeled events and one seed. The ResNet probe trains on two clips and tests on one per fold, but weak labels, few held-out source videos, ImageNet domain shift, and an uncalibrated 0.5 threshold limit the comparison. MOG2 is sensitive to motion, lighting, camera movement, shadows, and occlusion. False positives are frame counts rather than alarm episodes. HOG semantics do not match foreign-object labels. Simulated cues, modeled quotas, and current-host runtime do not validate physical sensors, edge-device latency, energy, or field reliability. Physical sensor and edge-hardware integration is planned as next-semester work.
+
+\section{Conclusion}
+SAGE produced matched-budget traces for four policies on three selected weakly labeled clips. The clip-held-out ResNet-18 linear probe matched MOG2 event recall and yielded fewer false-positive frames at 25\%, with higher host processing time. This is a narrow exploratory transfer-learning result, not a validated industrial anomaly detector. Annotation-derived cues remain oracle-assisted, labels are not independently validated, and these three clips cannot establish broad industrial performance, physical sensor benefit, edge savings, or energy savings.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
