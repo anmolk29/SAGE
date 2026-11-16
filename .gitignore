@@ -1,29 +1,25 @@
-# Rules for the completed SAGE workspace
+# Python environments, build output, and caches
 .venv/
+venv/
 .codex-build/
-__pycache__/
-*.py[cod]
-.pytest_cache/
 build/
 dist/
 *.egg-info/
-data/**
-!data/.gitkeep
-results/**
-!results/.gitkeep
-outputs/**
-!outputs/.gitkeep
-presentation-output/archive/**
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
 
-# Local ChatGPT project context and synced reference cache
-AGENTS.md
-sources/**
-
-# Existing GitHub repository protections
-# SAGE root ignore rules (safe baseline). Data, environments, and generated
-# artifacts stay on disk but out of Git. 04_Implementation/.gitignore also applies.
-
-# --- Dataset archives (named explicitly) and partial downloads ---
+# Local datasets and generated experiment output
+/data/**
+!/data/.gitkeep
+/results/**
+!/results/.gitkeep
+/outputs/**
+!/outputs/.gitkeep
+/IPAD_dataset/
 /IPAD_dataset.zip
 /image-data.zip
 *.crdownload
@@ -31,26 +27,12 @@ sources/**
 *.partial
 *.download
 
-# --- Raw / extracted dataset material ---
-IPAD_dataset/
-/data/
-/04_Implementation/data/
-
-# --- Python virtual environments ---
-.venv/
-venv/
-
-# --- Generated outputs and results (incl. synthetic demo output) ---
-/results/
-/outputs/
-/04_Implementation/results/
-/04_Implementation/outputs/
-
-# --- Model weights and checkpoints ---
+# Model/checkpoint files: keep the documented ResNet-18 model tracked
 *.pt
 *.pth
 *.ckpt
 *.onnx
+!/models/pretrained/resnet18-v1-7.onnx
 *.safetensors
 *.weights
 *.tflite
@@ -58,19 +40,20 @@ venv/
 yolo-v8-weights/
 checkpoints/
 
-# --- Python and tool caches ---
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.ipynb_checkpoints/
-*.egg-info/
-
-# --- Machine-local / secrets ---
+# Private/local configuration and operating-system files
 .env
 .streamlit/secrets.toml
 ~$*
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Presentation working files and superseded deck iterations
+/presentation-output/archive/**
+
+# Local template previews generated outside the project source tree
+/work/
+
+# ChatGPT project-local context; not part of the public project
+AGENTS.md
+/sources/**
