@@ -1,3 +1,25 @@
+# Rules for the completed SAGE workspace
+.venv/
+.codex-build/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+build/
+dist/
+*.egg-info/
+data/**
+!data/.gitkeep
+results/**
+!results/.gitkeep
+outputs/**
+!outputs/.gitkeep
+presentation-output/archive/**
+
+# Local ChatGPT project context and synced reference cache
+AGENTS.md
+sources/**
+
+# Existing GitHub repository protections
 # SAGE root ignore rules (safe baseline). Data, environments, and generated
 # artifacts stay on disk but out of Git. 04_Implementation/.gitignore also applies.
 

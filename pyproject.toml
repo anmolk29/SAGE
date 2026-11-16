@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sage-industrial-video"
+version = "0.1.0"
+description = "Reproducible sensor-guided adaptive video sampling research prototype"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26", "opencv-python>=4.8,<5"]
+
+[project.optional-dependencies]
+dashboard = ["streamlit>=1.50", "pandas>=2.1", "matplotlib>=3.8"]
+ml = ["onnxruntime>=1.17"]
+test = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+include = ["sage*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
