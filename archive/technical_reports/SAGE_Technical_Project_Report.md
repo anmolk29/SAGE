@@ -2,7 +2,7 @@
 ## Sensor-Guided Adaptive Video Processing for Resource-Constrained Industrial Monitoring
 
 **Technical Project Definition and Research Plan**  
-**Version:** 1.0 — Consolidated baseline  
+**Version:** 1.2 — Consolidated baseline  
 **Status:** Scope baseline; dataset and experimental protocol remain subject to validation  
 **Audience:** Academic evaluators, project team, and technical/industry reviewers
 
@@ -23,7 +23,7 @@
 | Cloud dependency | Not required |
 
 ### Revision note
-This document consolidates the current project baseline with relevant material from prior SAGE feasibility, research-problem, and industrial-monitoring documents. Where earlier alternatives conflict with the current baseline, the current baseline takes precedence. Dataset suitability, exact event taxonomy, sensor-cue generation, and the final experimental protocol remain open until validated.
+This document consolidates the current project baseline with relevant material from prior SAGE feasibility, research-problem, and industrial-monitoring documents. Where earlier alternatives conflict with the current baseline, the current baseline takes precedence. Dataset suitability, exact event taxonomy, sensor-cue generation, and the final experimental protocol remain open until validated. SAGE originated as a physical active-vision concept (a camera moved between monitored zones); it was redirected to sensor-guided adaptive video processing to remove mechanical dependencies while keeping the allocation of limited observation and computation as its core idea. Version 1.1 adds material carried over from the former Research Proposal, Literature Review and Reading Map, and Project Brief and Defense Guide (see Appendices B–D). Version 1.2 makes the comparison of classical computer vision with a pretrained model a required part of the evaluation (§7.3).
 
 ---
 
@@ -56,6 +56,14 @@ Under identical industrial video inputs, event definitions, detector settings, a
 - event detection delay;
 - missed-event rate;
 - robustness to sensor cue noise, delay, false triggers, and missed triggers?
+### Working hypotheses
+
+- **H1** — When cues are timely and reliable, at least one sensor-guided policy will improve the event-recall versus processing-cost trade-off over fixed-rate sampling on the selected footage.
+- **H2** — Increasing cue misses, false-trigger rate, or delay will reduce or eliminate any advantage of sensor-guided policies.
+- **H3** — Video-activity-adaptive sampling may match or outperform sensor guidance in some conditions; that is a valid result.
+
+These are hypotheses to be tested, not expected results. A negative or inconclusive outcome is reportable if the methodology is sound.
+
 
 ### 1.4 Primary objective
 Build a functioning, reproducible software system and experimentally determine whether sensor-guided adaptive processing reduces computational overhead while maintaining acceptable event-detection performance.
@@ -63,12 +71,12 @@ Build a functioning, reproducible software system and experimentally determine w
 ### 1.5 Supporting objectives
 1. Validate an accessible industrial video dataset and its temporal annotations.
 2. Define a bounded event taxonomy and region of interest (ROI).
-3. Implement video activity features using classical OpenCV methods.
+3. Implement video activity features using classical OpenCV methods, and compare classical and pretrained-model detection on the same footage.
 4. Implement a configurable sensor-cue simulator with realistic imperfections.
 5. Implement and compare four scheduling policies.
 6. Record runtime, frame-processing counts, detection results, and event latency.
 7. Present configurations and results through an interactive dashboard.
-8. Produce reproducible experiment artifacts and a technical report.
+8. Produce reproducible experiment artifacts, a technical report, and an IEEE-structured research manuscript.
 
 ---
 
@@ -104,7 +112,7 @@ A subsequent semester may integrate a Raspberry Pi, Arduino, camera, and physica
 
 SAGE is organized around a video stream, a simulated sensor-cue stream, a scheduling policy, a common processing/detection path, and an evaluation/dashboard layer.
 
-![SAGE system architecture](sage_architecture.png)
+![SAGE system architecture](../visual_assets/sage_architecture.png)
 
 **Figure 1.** Proposed system architecture. The implementation should preserve a common detector and measurement path across policies so comparisons are attributable to scheduling differences.
 
@@ -149,7 +157,7 @@ Use simulated sensor-event cues to increase or initiate video processing. The cu
 ### P4 — Budget-aware adaptive sampling
 Adapt sampling decisions while respecting a defined computational budget or target processing rate. The policy may combine activity and sensor cues, but its decision logic and budget enforcement must be explicit and reproducible.
 
-![Policy comparison diagram](sage_policies.png)
+![Policy comparison diagram](../visual_assets/sage_policies.png)
 
 **Figure 2.** Policy families. All are evaluated through a common processing and measurement path.
 
@@ -163,6 +171,10 @@ Adapt sampling decisions while respecting a defined computational budget or targ
 - Separate calibration videos/segments from evaluation segments.
 - Report per-video results as well as aggregate results.
 - Preserve run configuration and raw logs.
+
+### 4.2 Scheduling complexity
+
+For a video of F frames, fixed-rate sampling with interval k processes approximately F/k frames. Adaptive policies add a scheduling cost per sampling decision; sensor-triggered sampling also adds cue-handling cost that grows with the number of cue events; budget-aware scheduling adds its budget-accounting and update cost. The analysis must keep **algorithmic scheduling complexity** separate from the **image-processing cost** of the selected frames. These are different quantities and are measured separately (see Policy overhead in §8.2).
 
 ---
 
@@ -204,6 +216,23 @@ The dataset is not considered selected until the team verifies:
 
 **Selection rule:** choose the dataset that best supports a valid temporal experiment, not merely the dataset with the largest number of images or anomaly categories.
 
+### 5.5 Candidate event categories (provisional)
+
+- Conveyor stoppages.
+- Unexpected gaps in material flow.
+- Accumulation of products.
+- Production activity falling below an expected level.
+- An object failing to appear at an expected monitoring station.
+
+These are candidate categories, not a finalized event taxonomy. One or two categories will be selected according to what the validated dataset shows and annotates reliably, and each will be defined precisely before annotation or evaluation (see §14, Event taxonomy).
+
+### 5.6 Data rights and handling
+
+- Use a dataset only when its license or terms permit academic research; check separately whether it may be stored in the repository, shown in demonstrations, and reproduced in the manuscript or presentations.
+- If footage shows identifiable people, do not use face recognition or store face images; blur or exclude such frames where publication requires it.
+- Limit raw-video retention and access; keep event timestamps, manifests, and aggregate results where possible.
+- Record source, version, license, transformations, and retention decisions for each dataset.
+
 ---
 
 ## 6. Sensor-event simulation
@@ -239,14 +268,25 @@ The specific parameter values should be selected and documented during protocol 
 ## 7. Computer vision approach
 
 ### 7.1 Semester-one approach
-Use classical OpenCV methods and, if justified by dataset format and scope, a pretrained model for a bounded detection task. The baseline should remain interpretable and computationally measurable.
+Use classical OpenCV methods and at least one pretrained model for a bounded detection task, and evaluate them comparatively (§7.3). The classical baseline should remain interpretable and computationally measurable.
 
 Potential components, subject to validation:
 - frame differencing or background subtraction for activity;
 - ROI masking for the monitored conveyor/production region;
 - motion/activity score calculation;
 - threshold-based event candidate generation;
-- optional pretrained object detector for a specific visible event class.
+- a pretrained model for a specific visible event class, selected during dataset validation.
+A classical pipeline would typically include, subject to validation:
+
+- frame acquisition at the indices selected by the policy;
+- resizing and grayscale conversion;
+- Gaussian filtering;
+- frame differencing or background subtraction;
+- thresholding and morphological operations;
+- motion-region extraction within the ROI.
+
+Where time permits, at least two activity-estimation methods (for example, frame differencing and background subtraction) should be compared, because they differ in computational and detection characteristics.
+
 
 ### 7.2 Detector selection criteria
 - visible in selected footage;
@@ -257,6 +297,17 @@ Potential components, subject to validation:
 - allows event detection delay to be measured.
 
 The project must distinguish **sampling-policy evaluation** from **detector accuracy evaluation**. The same detector is used across policies; the detector is not claimed as a novel contribution.
+
+### 7.3 Classical vs. pretrained detection comparison
+
+Comparing classical computer vision with a pretrained model is a required part of the evaluation. It is reported separately from the sampling-policy comparison.
+
+- Evaluate both detector types on the same validated footage, event definitions, ROI, annotations, and matching rules.
+- Report detection metrics (recall, precision, detection delay, false alarms) and processing cost (time per processed frame, throughput, and CPU/memory where reliably measurable) for each detector type.
+- Use a pretrained model without training from scratch (§2.2). Record the model name, version, weights source, input resolution, and any fine-tuning or threshold calibration, which must use calibration data only.
+- Choose the pretrained model during dataset validation according to the criteria in §7.2. Until then, the model choice is provisional.
+
+Within any single policy comparison the detector is held fixed (§4.1). Whether the full policy comparison is repeated for both detector types is decided during protocol design.
 
 ---
 
@@ -282,7 +333,7 @@ Use paired comparisons: every policy processes the same videos under the same co
 ### 8.3 Reporting
 Report both computational savings and detection quality. A policy is not considered successful merely because it processes fewer frames. Results should include:
 - per-video and aggregate values;
-- variability or confidence intervals where appropriate;
+- variability or confidence intervals where appropriate (for example, paired bootstrap intervals if practical);
 - event-level error analysis;
 - sensitivity to cue imperfections;
 - limitations arising from dataset scale and simulation assumptions.
@@ -298,6 +349,21 @@ Report both computational savings and detection quality. A policy is not conside
 - run logs and random seeds;
 - metric calculation scripts;
 - dashboard screenshots or exported result tables.
+
+### 8.5 Research manuscript
+
+An IEEE-structured research manuscript is a required deliverable. It reports the actual methodology and measured results; submission suitability and acceptance are not assumed. Planned structure:
+
+- Abstract
+- Introduction and problem statement
+- Related work
+- System model and problem formulation
+- Scheduling algorithms
+- Experimental methodology
+- Results and comparative analysis
+- Threats to validity and limitations
+- Conclusion and future work
+- References
 
 ---
 
@@ -338,7 +404,7 @@ The Streamlit dashboard is an experimental interface, not a production monitorin
 
 ## 11. Academic subject mapping
 
-![Subject mapping diagram](sage_subjects.png)
+![Subject mapping diagram](../visual_assets/sage_subjects.png)
 
 **Figure 3.** How SAGE provides evidence for the six course areas.
 
@@ -372,6 +438,14 @@ The Streamlit dashboard is an experimental interface, not a production monitorin
 
 ### Defensible contribution
 A software framework and controlled comparative evaluation of four adaptive video-sampling policies, incorporating simulated sensor cues with explicit imperfections, and reporting the trade-off between computational work and event-detection performance in an industrial video scenario.
+### Evidence and supported claims
+
+| Evidence collected | Claims it can support | Claims it cannot support on its own |
+|---|---|---|
+| Real video with simulated sensor cues | Controlled comparison of scheduling policies under the stated simulation conditions | Reliability of physical sensors in deployment |
+| Software timing on the named test machine | Relative processing cost on that machine under the tested conditions | Performance on a Raspberry Pi or other edge devices |
+| Later-stage tests with physical sensors and camera | Behavior of the integrated setup under the tested physical conditions | Universal reliability or performance in all environments |
+
 
 ### Claims not supported at project start
 - “SAGE is novel” without a completed literature comparison.
@@ -381,6 +455,7 @@ A software framework and controlled comparative evaluation of four adaptive vide
 - “Sensor guidance improves detection” before controlled results.
 - “The framework generalizes to all industrial processes” from a narrow dataset.
 - Any numerical performance improvement before experiments are run.
+- Financial savings, return on investment, or productivity gains without measured resource savings and cost inputs.
 
 ### Literature positioning tasks
 Before finalizing the paper, review:
@@ -403,11 +478,13 @@ The literature review should identify the closest comparable methods and state t
 | Dataset | IPAD leading candidate; conveyor dataset alternative | Open pending validation |
 | Sensor input | Simulated proximity/photoelectric or motion cues | Frozen at concept level |
 | CV | OpenCV-based image processing | Frozen at approach level |
+| Detector comparison | Classical OpenCV pipeline vs. pretrained model | Required; specific model open |
 | Scheduling | Four policy families | Frozen |
 | Dashboard | Streamlit | Frozen |
-| Semester implementation | Simulation-first; no physical prototype | Frozen |
+| Semester implementation | Simulation-first; no physical prototype | Frozen — simulation confirmed acceptable for assessment |
 | Research style | Applied research with reproducible experiments | Frozen |
 | Cloud | Not required | Frozen |
+| Research manuscript | IEEE-structured manuscript reporting actual results | Required |
 | Future hardware | Raspberry Pi, Arduino, camera, physical sensors | Future work |
 | Event taxonomy | Dataset-dependent | Open |
 | Sensor cue model | Requires explicit realism assumptions | Open |
@@ -449,5 +526,81 @@ This report incorporates and updates relevant content from:
 - *SAGE Research Problem and Project Direction*;
 - *SAGE Industrial Production-Line Monitoring*;
 - *SAGE Research Problem and Professor Review*.
+- *SAGE Research Proposal* (26 Oct 2026) — hypotheses, data handling, and analysis detail;
+- *SAGE Literature Review and Reading Map* (26 Oct 2026) — carried over as Appendix C;
+- *SAGE Project Brief and Defense Guide* (26 Oct 2026) — review answers carried over as Appendix D.
 
 Earlier alternatives are retained only where they remain relevant as open questions or future work. The current industrial, simulation-first baseline supersedes older exploratory options.
+
+## Appendix C — Literature reading map
+
+Carried over from the former *SAGE Literature Review and Reading Map* (26 Oct 2026). This is a structured starting map, not a completed systematic review. Resource-aware and adaptive video analytics already exist, so SAGE should make a bounded empirical contribution and avoid a first-of-its-kind claim unless a documented search supports it.
+
+| Source | Contribution | Relevance to SAGE | Verify in full text |
+|---|---|---|---|
+| [1] Xu et al. 2023 | Survey of edge video analytics applications, architectures, techniques, datasets, and challenges. | Field context and search terms. | Coverage date; adaptation taxonomy; datasets and measures. |
+| [2] Kang et al. 2017 | NoScope optimizes video queries using specialized models and cascades. | Shows cost reduction has prior art beyond frame skipping. | Task assumptions; per-video specialization; accuracy and hardware. |
+| [3] Hung et al. 2018 | VideoEdge selects plans and placements under accuracy and resource constraints. | Motivates explicit budgets and cost-quality comparisons. | Formulation; baselines; deployment setting. |
+| [4] Xiao et al. 2021 | Yoda studies performance variation across videos and time. | Supports paired tests, multiple clips, and reporting spread. | Benchmark design; features; metrics; limits. |
+| [5] Qian et al. 2023 | OsmoticGate studies adaptive edge-based video analytics. | Shows adaptation itself is not a novel claim. | Adaptation variables; assumptions; baselines. |
+| [6] OpenCV tutorial | Documents background-subtraction methods for foreground motion masks. | Supports a practical, interpretable prototype detector. | Lighting, shadows, camera motion, threshold limits. |
+
+### Synthesis
+
+Prior work establishes that video analysis has a resource-quality trade-off and that multiple system layers can be adapted [1]–[5]. Performance varies by workload and video, so a single favorable clip cannot justify a broad claim [4]. SAGE should hold video and detector constant while changing policy and cue quality. Whether the resulting contribution is sufficiently original remains open until a more systematic search is complete.
+
+### Further leads (unverified)
+
+- Vaisenberg et al. (2009), work on active camera observation scheduling — full bibliographic details still to be identified.
+- *Adaptive Frame Sampling for Real-Time Video Object Detection and Multi-Object Tracking on Edge Devices*, reported as published online in June 2026 — https://gr-journals.com/journals/ictasa/issues/v2i2/26310
+- IEEE Xplore record noted as OsmoticGate/SplitStream-related work on adaptive edge video analytics — https://ieeexplore.ieee.org/abstract/document/9839465/ (attribution to verify).
+
+### Search and appraisal plan
+
+- Search IEEE Xplore, ACM Digital Library, proceedings pages, and Google Scholar for edge video analytics, adaptive frame sampling, event-triggered video, sensor-guided video analytics, resource-aware observation scheduling, and industrial video anomaly detection.
+- Use backward and forward citation chasing from [1]–[5]. Check venue, peer-review status, and the exact task for newer papers.
+- For every paper, record objective, inputs, adaptation decision, hardware, dataset, baselines, metrics, findings, and limitations.
+- Separate direct evidence from interpretation; do not infer a research gap from a title difference.
+- Ask the supervisor to review the gap statement before manuscript submission.
+
+### Questions for the reading group
+
+- Which work changes frame selection, and which changes models, placement, or resource allocation?
+- How do prior systems define event accuracy and latency?
+- Do any papers compare noisy or delayed cues against video-only adaptation?
+- What clip diversity supports the intended claim?
+- Which metric exposes a policy that saves compute by missing short events?
+
+### Literature references
+
+[1] R. Xu, S. N. Razavi, and R. Zheng, “Edge Video Analytics: A Survey on Applications, Systems and Enabling Techniques,” IEEE Communications Surveys & Tutorials, vol. 25, pp. 2951–2982, 2023, doi: 10.1109/COMST.2023.3323091.
+
+[2] D. Kang, J. Emmons, F. Abuzaid, P. Bailis, and M. Zaharia, “NoScope: Optimizing Neural Network Queries over Video at Scale,” Proceedings of the VLDB Endowment, vol. 10, no. 11, pp. 1586–1597, 2017, doi: 10.14778/3137628.3137664.
+
+[3] C.-C. Hung et al., “VideoEdge: Processing Camera Streams using Hierarchical Clusters,” in Proceedings of the 2018 IEEE/ACM Symposium on Edge Computing, 2018, doi: 10.1109/SEC.2018.00016.
+
+[4] Z. Xiao, Z. Xia, H. Zheng, B. Y. Zhao, and J. Jiang, “Towards Performance Clarity of Edge Video Analytics,” in Proceedings of the Sixth ACM/IEEE Symposium on Edge Computing, 2021, doi: 10.1145/3453142.3491272.
+
+[5] B. Qian, Z. Wen, J. Tang, Y. Yuan, A. Y. Zomaya, and R. Ranjan, “OsmoticGate: Adaptive Edge-Based Real-Time Video Analytics for the Internet of Things,” IEEE Transactions on Computers, vol. 72, no. 4, pp. 1178–1193, 2023, doi: 10.1109/TC.2022.3193630.
+
+[6] OpenCV, “How to Use Background Subtraction Methods,” OpenCV Tutorials. Available: https://docs.opencv.org/4.11.0/d1/dc5/tutorial_background_subtraction.html (accessed 26 Oct. 2026).
+
+## Appendix D — Responses to supervisor review questions
+
+Carried over from the former *SAGE Project Brief and Defense Guide* (26 Oct 2026), with wording aligned to the current industrial baseline.
+
+### Did we actually do research, and from where?
+
+We completed an initial targeted literature search, not a systematic review. It includes an IEEE survey, papers on video-query optimization and resource allocation, and an evaluation study (Appendix C, [1]–[5]). The next step is to read the full papers and record methods, datasets, metrics, and limitations. We should not claim all prior work has been reviewed.
+
+### What problem are we solving, and does it exist?
+
+The broad problem is established: video analytics can compete for limited edge compute, and system choices affect quality, cost, and latency [1], [3], [5]. Our specific question is whether simulated sensor cues add value to adaptive sampling in a defined industrial comparison. We will measure the answer.
+
+### Is this more than writing a paper?
+
+Yes, if the team delivers software that processes real industrial footage, makes selectable scheduling decisions, logs results, and supports a fair comparison. The dashboard must use experiment outputs. The manuscript explains evidence from the system.
+
+### What would count as a useful negative result?
+
+If video-activity-adaptive sampling matches sensor-guided policies, or cue errors erase their benefit, SAGE can report that sensor cues did not add value under the tested conditions. That guides whether physical sensors merit later integration.

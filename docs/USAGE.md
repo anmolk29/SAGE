@@ -1,6 +1,6 @@
-# SAGE v1.0 — Windows Usage Guide
+# SAGE Usage Guide
 
-Commands below match the current `python -m sage` CLI. Run them from the SAGE project root (the folder containing `requirements.txt`, `sage/`, and `app.py`). The IPAD archive and extracted frames are **not present in this workspace**; dataset setup is described in [DATASET_AND_PROVENANCE.md](DATASET_AND_PROVENANCE.md).
+Commands below match the current `python -m sage` CLI. Run them from the project root (the folder containing `requirements.txt`, `sage/`, and `app.py`). The three Mendeley conveyor clips used in the pilot are local, Git-ignored data; they are not bundled in a fresh repository checkout. See [Dataset and provenance](DATASET_AND_PROVENANCE.md) and [Dataset validation](research/DATASET_VALIDATION.md) for setup context and evidence. IPAD was not used in the reported pilot.
 
 ## 1. Create the Python environment
 
@@ -120,6 +120,6 @@ Select the relevant result CSV in the dashboard. Aggregate dashboard values desc
 - Store downloaded raw media under `data/raw/` and annotations under `data/annotations/`; the repository ignore rules exclude `data/**` except `data/.gitkeep`.
 - Keep derived/conversion files separate from raw source and document resizing, frame extraction, timing assumptions, and exclusions.
 - Store experiment outputs under `results/<run-name>/`; `results/**` is excluded from version control except `results/.gitkeep`.
-- Do not put large archives, raw frames, private recordings, or model weights in Git. Keep a provenance manifest with source, license/permission status, checksum, clip IDs, timing, and labels.
+- Do not put large archives, raw frames, private recordings, or training checkpoints in Git. The repository includes only the Apache-2.0 ResNet-18 weights required for the documented probe; provenance and checksum are recorded in `models/pretrained/README.md`.
 
 For current dataset access and validation steps, see [DATASET_AND_PROVENANCE.md](DATASET_AND_PROVENANCE.md). For the project requirements and implemented/simulated/planned boundaries, see [SAGE_SPECIFICATION.md](SAGE_SPECIFICATION.md).
